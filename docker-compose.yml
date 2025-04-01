@@ -1,0 +1,35 @@
+services:
+  arxiv-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.arxiv
+    ports:
+      - "8000:8000"
+  
+  docling-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.docling
+    environment:
+      - DNNL_CPU_RUNTIME=SEQ
+    ports:
+      - "8001:8001"
+  
+  client-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.client
+    ports:
+      - "8080:8080"
+    depends_on:
+      - arxiv-server
+      - docling-server
+
+  streamlit-app:
+      build:
+        context: .
+        dockerfile: docker/Dockerfile.streamlit
+      ports:
+        - "8501:8501"
+      depends_on:
+        - client-server
